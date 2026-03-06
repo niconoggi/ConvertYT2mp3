@@ -1,8 +1,10 @@
 package de.noggi.convertyt2mp3;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -10,7 +12,20 @@ import java.util.List;
 
 public class PropertyStore {
 
-    public static final Path RES_PATH = Path.of("./res/properties");
+    private static final Path RES_PATH;
+
+    static {
+        final URL propertiesResource = PropertyStore.class.getResource("properties");
+        if (propertiesResource == null) {
+            throw new RuntimeException("Properties could not be loaded, as the resource was not found!");
+        }
+        final String propertiesPath = propertiesResource.getFile();
+        if (propertiesPath == null || propertiesPath.isBlank()) {
+            throw new RuntimeException("Properties could not be loaded! The resource was found, but getPath() failed!");
+        }
+
+        RES_PATH = Path.of(propertiesPath.replace("/C:", ""));
+    }
 
     private static String apiKey;
     private static int tokens;

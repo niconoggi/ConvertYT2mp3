@@ -2,6 +2,7 @@ GENERAL
 -> move properties from res folder to src/main/resources
 -> Clean code
 -> ConversionUtil: redirect process stream data using LogWriter instead of plain sysout
+-> LogWriter should print stacktrace elements
 
 CONSOLE
 -> Add parameters for output name and output location (make it easier for you)
