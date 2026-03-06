@@ -60,7 +60,7 @@ public class PropertyStore {
         try {
             Files.writeString(RES_PATH, sb.toString(), StandardOpenOption.WRITE);
         } catch (IOException e) {
-            LogWriter.error(PropertyStore.class, "Unable to write properties! " + e.getMessage());
+            LogWriter.error(PropertyStore.class, "Unable to write properties!", e);
         }
     }
 
@@ -94,7 +94,7 @@ public class PropertyStore {
             }
             return true;
         } catch (final Exception ex) {
-            LogWriter.error(PropertyStore.class, "Unable to read properties! " + ex.getMessage());
+            LogWriter.error(PropertyStore.class, "Unable to read properties!", ex);
             return false;
         }
     }

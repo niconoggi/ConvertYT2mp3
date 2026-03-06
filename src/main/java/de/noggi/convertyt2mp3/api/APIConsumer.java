@@ -28,7 +28,7 @@ public class APIConsumer {
         try {
             return new ObjectMapper().readValue(apiResponse, YouTubeSearchResponse.class);
         } catch (JsonProcessingException e) {
-            LogWriter.error(APIConsumer.class, "Error processing json: " + e.getMessage());
+            LogWriter.error(APIConsumer.class, "Error processing json:", e);
             throw new APIConsumerException("Interne Umwandlung Fehlgeschlagen!");
         }
     }

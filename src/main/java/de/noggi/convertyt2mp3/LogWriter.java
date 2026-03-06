@@ -11,6 +11,10 @@ public class LogWriter {
     private static final Path LOG_DIR_PATH = Path.of("./log");
     private static final Path LOG_FILE_PATH = Path.of("./log/log.txt");
 
+    private static final char NEW_LINE = '\n';
+    private static final byte MAX_STACK_TRACE_PER_CAUSE = 10;
+    private static final String CAUSED_BY = "Caused by: ";
+
     private static boolean devMode = false;
 
     public static void create(final boolean dev) {
@@ -36,6 +40,37 @@ public class LogWriter {
 
     public static void error(final Class<?> caller, final String msg) {
         write(createLogMsg(caller, "ERROR", msg));
+    }
+
+    public static void error(final Class<?> caller, final String msg, final Throwable t) {
+        final StringBuilder fullMsg = new StringBuilder(msg);
+        fullMsg.append(NEW_LINE);
+
+        Throwable activeEx = t;
+        boolean cause = false;
+        while (activeEx != null) {
+            if (cause) {
+                fullMsg.append(CAUSED_BY);
+            }
+            appendStackTrace(fullMsg, activeEx);
+            activeEx = activeEx.getCause();
+            cause = true;
+        }
+
+        error(caller, fullMsg.toString());
+    }
+
+    private static void appendStackTrace(final StringBuilder target, final Throwable t) {
+        target.append(t.getMessage()).append(NEW_LINE);
+
+        byte countElements = 0;
+        for (final StackTraceElement ste : t.getStackTrace()) {
+            if (countElements == MAX_STACK_TRACE_PER_CAUSE) {
+                return;
+            }
+            target.append(ste.toString()).append(NEW_LINE);
+            countElements++;
+        }
     }
 
     private static String createLogMsg(final Class<?> caller, final String severity, final String msg) {

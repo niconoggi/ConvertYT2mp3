@@ -57,7 +57,7 @@ public class ConversionUtil {
             }
         } catch (Exception e) {
             if (!unzipFaultyErrorDownload(Path.of(outputTemplate.replace(format, "")))) {
-                LogWriter.error(ConversionUtil.class, "Error converting the video! " + e.getMessage());
+                LogWriter.error(ConversionUtil.class, "Error converting the video!", e);
                 return new ConversionDto("Fehler bei der Umwandlung!");
             } else {
                 return new ConversionDto(TMP_FOLDER.resolve(title).resolve(format));
@@ -126,7 +126,7 @@ public class ConversionUtil {
             zis.closeEntry();
             zis.close();
         } catch (final Exception ex) {
-            LogWriter.error(ConversionUtil.class,"Unable to locate or unzip downloaded file!  " + ex.getMessage());
+            LogWriter.error(ConversionUtil.class,"Unable to locate or unzip downloaded file!", ex);
             return false;
         }
         return true;
