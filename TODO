@@ -1,0 +1,11 @@
+GENERAL
+-> move properties from res folder to src/main/resources
+-> Clean code
+-> ConversionUtil: redirect process stream data using LogWriter instead of plain sysout
+
+CONSOLE
+-> Add parameters for output name and output location (make it easier for you)
+-> If need be, move console application in it's own class (seperating console and UI more readable)
+
+UI
+-> enable play button (listen to the song before deciding to "download" it. best-case: pre-download it)

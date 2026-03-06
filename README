@@ -1,0 +1,18 @@
+INFO:
+When you fetch this project from Git the first time, make sure to
+1. install the ffmpeg tools
+- powershell -> "winget install ffmpeg"
+- locate the ffmpeg.exe, ffplay.exe and ffprobe.exe on your device
+- copy or move these files in the lib directory
+
+2. install the yt-dlp.exe
+- powershell -> "winget install yt-dlp" (or manually in the web)
+- locate the yt-dlp.exe file on your device and copy or move it to the lib directory
+
+3. set the apikey in the properties (only necessary if you want to use the UI)
+- use the google developer console to fetch the api key to use for this project
+
+NOTE:
+Currently, these files cannot be pushed to git, due to community git without the large filesystem
+only allows pushing files with max. 20MB size!
+Also: Never push the API key from the properties file!
