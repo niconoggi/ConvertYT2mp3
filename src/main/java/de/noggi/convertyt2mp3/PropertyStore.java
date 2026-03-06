@@ -12,6 +12,10 @@ import java.util.List;
 
 public class PropertyStore {
 
+    private static final String PROPERTY_APIKEY = "apikey";
+    private static final String PROPERTY_TOKENS = "tokens";
+    private static final String PROPERTY_PREV_USAGE = "prev_usage";
+
     private static final Path RES_PATH;
 
     static {
@@ -64,7 +68,7 @@ public class PropertyStore {
         }
     }
 
-    public static boolean read() {
+    public static boolean read(final boolean forceApiKey) {
         try {
             final List<String> propertyContent = Files.readAllLines(
                     RES_PATH);
@@ -76,19 +80,24 @@ public class PropertyStore {
 
             for (final String property : propertyContent) {
                 final String[] parts = property.split("=");
-                if (parts.length != 2) {
-                    LogWriter.error(PropertyStore.class, "Unable to read properties! Invalid property: " + property);
-                    return false;
-                }
-                if (parts[0].equals("apikey")) {
-                    apikey(parts[1]);
-                } else  if (parts[0].equals("tokens")) {
-                    tokens(Integer.parseInt(parts[1]));
-                } else if (parts[0].equals("prev_usage")) {
-                    prevUsage = LocalDate.parse(parts[1], DateTimeFormatter.ofPattern("yyyyMMdd"));
-                    if (LocalDate.now().isAfter(prevUsage)) {
-                        //reset the tokens on a new day
-                        tokens = 0;
+
+                switch (parts[0]) {
+                    case PROPERTY_APIKEY -> {
+                        if (parts.length != 2) {
+                            LogWriter.error(PropertyStore.class, "Unable to read properties! Invalid property: " + property);
+                            return false;
+                        }
+                        apikey(parts[1]);
+                    }
+                    case PROPERTY_TOKENS -> tokens(parts.length == 2 ? Integer.parseInt(parts[1]) : 0);
+                    case PROPERTY_PREV_USAGE -> {
+                        prevUsage = parts.length == 2
+                                ? LocalDate.parse(parts[1], DateTimeFormatter.ofPattern("yyyyMMdd"))
+                                : LocalDate.now();
+                        if (LocalDate.now().isAfter(prevUsage)) {
+                            //reset the tokens on a new day
+                            tokens = 0;
+                        }
                     }
                 }
             }

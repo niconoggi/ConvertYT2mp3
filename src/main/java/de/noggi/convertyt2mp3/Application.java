@@ -14,7 +14,7 @@ public class Application {
         //set this flag to false to enable UI
         final boolean applicationModeConsoleFlag = true;
         LogWriter.create(applicationModeConsoleFlag);
-        setup();
+        setup(applicationModeConsoleFlag);
         if (applicationModeConsoleFlag) {
             startConsoleApplication();
         } else {
@@ -24,10 +24,10 @@ public class Application {
 
     }
 
-    private static void setup() {
+    private static void setup(final boolean consoleApp) {
         ConversionUtil.cleanTemp();
         LogWriter.info(Application.class, "Application started");
-        if (!PropertyStore.read()) {
+        if (!PropertyStore.read(!consoleApp)) {
             return;
         }
         LogWriter.info(Application.class, "Properties read successfully");
@@ -52,8 +52,4 @@ public class Application {
         return System.console().readLine().trim();
     }
 
-    private static void nicosGanzEigenerUrlZuMp3Converter() {
-        //https://www.youtube.com/watch?v=jN-3bzAzPHU&list=PL3350C7D8DFC92A06
-        ConversionUtil.convert("R-NaSKSrc9Q", "dramatic_moment", ".mp3");
-    }
 }
