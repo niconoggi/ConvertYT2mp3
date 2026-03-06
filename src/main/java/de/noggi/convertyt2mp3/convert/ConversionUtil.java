@@ -15,6 +15,8 @@ public class ConversionUtil {
     private static final Path TMP_FOLDER = Path.of("./temp");
     private static final String LIB_PATH = "./lib";
 
+    private static final char NEW_LINE = '\n';
+
     public static void cleanTemp() {
         if (Files.exists(TMP_FOLDER)) {
             for (final File tmpFile : TMP_FOLDER.toFile().listFiles()) {
@@ -71,10 +73,12 @@ public class ConversionUtil {
                 new InputStreamReader(stream)
         );
 
+        final StringBuilder processStreamContent = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
-            System.out.println(line); // Hier siehst du endlich den echten Fehler
+            processStreamContent.append(line).append(NEW_LINE);
         }
+        LogWriter.info(ConversionUtil.class, "read process stream: " + processStreamContent);
     }
 
     private static String fixTitle(final String title) {

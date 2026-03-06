@@ -1,6 +1,5 @@
 GENERAL
 -> Clean code
--> ConversionUtil: redirect process stream data using LogWriter instead of plain sysout
 
 CONSOLE
 -> Add parameters for output name and output location (make it easier for you)
