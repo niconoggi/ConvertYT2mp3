@@ -84,11 +84,15 @@ public class PropertyStore {
 
                 switch (parts[0]) {
                     case PROPERTY_APIKEY -> {
-                        if (parts.length != 2 && forceApiKey) {
-                            LogWriter.error(PropertyStore.class, "Unable to read properties! Invalid property: " + property);
-                            return false;
+                        if (parts.length != 2) {
+                            if (forceApiKey) {
+                                LogWriter.error(PropertyStore.class, "Unable to read properties! Invalid property: " + property);
+                                return false;
+                            }
+                            //if apikey is not forced, i.e. in console mode, just don't do anything
+                        } else {
+                            apikey(parts[1]);
                         }
-                        apikey(parts[1]);
                     }
                     case PROPERTY_TOKENS -> tokens(parts.length == 2 ? Integer.parseInt(parts[1]) : 0);
                     case PROPERTY_PREV_USAGE -> {
