@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class LogWriter {
 
     private static final Path LOG_DIR_PATH = Path.of("./log");
-    private static final Path LOG_FILE_PATH = Path.of("./log/log.txt");
+    private static final Path LOG_FILE_PATH = LOG_DIR_PATH.resolve(Path.of("log.txt"));
 
     private static final char NEW_LINE = '\n';
     private static final byte MAX_STACK_TRACE_PER_CAUSE = 10;
@@ -74,7 +74,7 @@ public class LogWriter {
     }
 
     private static String createLogMsg(final Class<?> caller, final String severity, final String msg) {
-        return severity + ": " + LocalDateTime.now().toString() + " - " + caller.getSimpleName() + " - " + msg;
+        return severity + ": " + LocalDateTime.now() + " - " + caller.getSimpleName() + " - " + msg;
     }
 
     private static void write(final String msg) {
@@ -117,6 +117,5 @@ public class LogWriter {
         return true;
     }
 
-    private LogWriter() {
-    }
+    private LogWriter() {}
 }

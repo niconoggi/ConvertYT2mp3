@@ -40,7 +40,7 @@ public class Application {
         private static final String PROMPT_NAME = "Input downloaded file name (or 'E' to exit; or 'B' to go back to the query input)";
 
         static void start() {
-            String input = null;
+            String input;
             boolean inputModeQuery = true;
             String videoQuery = null;
             while (!END_CONSOLE_APP_COMMAND.equalsIgnoreCase(

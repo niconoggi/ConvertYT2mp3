@@ -28,6 +28,7 @@ public class PropertyStore {
             throw new RuntimeException("Properties could not be loaded! The resource was found, but getPath() failed!");
         }
 
+        //remove the "C:" from the path if there is one, as otherwise the Path will throw an Exception
         RES_PATH = Path.of(propertiesPath.replace("/C:", ""));
     }
 
@@ -83,7 +84,7 @@ public class PropertyStore {
 
                 switch (parts[0]) {
                     case PROPERTY_APIKEY -> {
-                        if (parts.length != 2) {
+                        if (parts.length != 2 && forceApiKey) {
                             LogWriter.error(PropertyStore.class, "Unable to read properties! Invalid property: " + property);
                             return false;
                         }

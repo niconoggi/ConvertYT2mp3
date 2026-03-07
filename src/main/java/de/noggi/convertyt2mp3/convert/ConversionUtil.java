@@ -5,6 +5,7 @@ import de.noggi.convertyt2mp3.LogWriter;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -19,8 +20,17 @@ public class ConversionUtil {
 
     public static void cleanTemp() {
         if (Files.exists(TMP_FOLDER)) {
-            for (final File tmpFile : TMP_FOLDER.toFile().listFiles()) {
-                tmpFile.delete();
+
+            try(final Stream<Path> ls = Files.list(TMP_FOLDER)) {
+                ls.forEach(file -> {
+                    try {
+                        Files.delete(file);
+                    } catch (final IOException fileDelEx) {
+                        LogWriter.error(ConversionUtil.class, "Unable to clean file " + file, fileDelEx);
+                    }
+                });
+            } catch (final IOException ex) {
+                LogWriter.error(ConversionUtil.class, "Unable to cleanup temp dir!", ex);
             }
         }
 
@@ -33,7 +43,7 @@ public class ConversionUtil {
         }
         final String fullyQualifiedUrl = YOUTUBE_QUERY + videoId;
 
-        String outputTemplate = TMP_FOLDER.toString() + "/" + fixTitle(title) + format;
+        String outputTemplate = TMP_FOLDER + "/" + fixTitle(title) + format;
 
         ProcessBuilder conversionProcess = new ProcessBuilder(
                 YT_DLP_PATH,
@@ -48,8 +58,8 @@ public class ConversionUtil {
             conversionProcess.redirectErrorStream(true);
             final Process process = conversionProcess.start();
 
-            readProcessStream(process.getInputStream());
-            readProcessStream(process.getErrorStream());
+            readProcessStream(process.getInputStream(), true);
+            readProcessStream(process.getErrorStream(), false);
 
             final int exitCode = process.waitFor();
             if (exitCode != 0) {
@@ -67,7 +77,7 @@ public class ConversionUtil {
         }
     }
 
-    private static void readProcessStream(final InputStream stream) throws IOException {
+    private static void readProcessStream(final InputStream stream, final boolean errorStream) throws IOException {
         // Output lesen!
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(stream)
@@ -78,7 +88,12 @@ public class ConversionUtil {
         while ((line = reader.readLine()) != null) {
             processStreamContent.append(line).append(NEW_LINE);
         }
-        LogWriter.info(ConversionUtil.class, "read process stream: " + processStreamContent);
+
+        if (errorStream) {
+            LogWriter.error(ConversionUtil.class, "read error stream: " + processStreamContent);
+        } else {
+            LogWriter.info(ConversionUtil.class, "read process stream: " + processStreamContent);
+        }
     }
 
     private static String fixTitle(final String title) {

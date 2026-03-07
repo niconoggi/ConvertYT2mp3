@@ -19,11 +19,13 @@ public class APIConsumer {
     private static final String SEARCH_URL = "https://www.googleapis.com/youtube/v3/search?part=snippet&filter=id&maxResults=25&q=<query>&key=";
     private static final String VIDEOS_URL = "https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=<video_id>&key=";
 
+    private static final String BASE_QUERY_TOKEN = "<query>";
+
     public static final int MAX_TOKEN_COUNT = 10000;
 
     public static YouTubeSearchResponse search(final String query) throws APIConsumerException {
         assertTokensNotExceeded();
-        final String apiResponse = callAPI(SEARCH_URL, "<query>", query.replace(" ", "_"));
+        final String apiResponse = callAPI(query.replace(" ", "_"));
         LogWriter.info(APIConsumer.class, apiResponse);
         try {
             return new ObjectMapper().readValue(apiResponse, YouTubeSearchResponse.class);
@@ -39,8 +41,8 @@ public class APIConsumer {
         }
     }
 
-    private static String callAPI(final String baseUrl, final String queryToken, final String query) throws APIConsumerException {
-        final URI uri = URI.create(baseUrl.replace(queryToken, query) + PropertyStore.apikey());
+    private static String callAPI(final String query) throws APIConsumerException {
+        final URI uri = URI.create(SEARCH_URL.replace(BASE_QUERY_TOKEN, query) + PropertyStore.apikey());
 
         HttpURLConnection conn = null;
         try {
@@ -48,7 +50,7 @@ public class APIConsumer {
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
         } catch (IOException e) {
-            LogWriter.error(APIConsumer.class, "Die Verbindung konnte nicht aufgebaut werden!\n" + e.getMessage());
+            LogWriter.error(APIConsumer.class, "Die Verbindung konnte nicht aufgebaut werden!\n", e);
             throw new APIConsumerException("Die Verbindung konnte nicht aufgebaut werden!");
         }
 
@@ -56,13 +58,13 @@ public class APIConsumer {
 
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
             final StringBuilder responseBuilder = new StringBuilder();
-            String line = null;
+            String line;
             while ((line = reader.readLine()) != null) {
                 responseBuilder.append(line).append("\n");
             }
             return responseBuilder.toString();
         } catch (final IOException e) {
-            LogWriter.error(APIConsumer.class, "API Antwort konnte nicht umgewandelt werden\n" + e.getMessage());
+            LogWriter.error(APIConsumer.class, "API Antwort konnte nicht umgewandelt werden\n", e);
             throw new APIConsumerException("API Antwort konnte nicht umgewandelt werden!");
         }
     }
